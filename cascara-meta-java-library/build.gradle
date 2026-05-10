@@ -1,0 +1,35 @@
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id("com.gradle.plugin-publish") version "1.2.1"
+}
+
+
+group = rootProject.group
+version = "0.1.0"
+
+
+dependencies {
+    implementation project(":cascara-meta-conventions")
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+
+gradlePlugin {
+    website = "https://github.com/qishr/cascara-build-logic"
+    vcsUrl = "https://github.com/qishr/cascara-build-logic"
+    plugins {
+        sharedConventions {
+            id = "io.github.qishr.cascara-meta.java-library"
+            implementationClass = "JavaLibraryConventionsPlugin"
+            displayName = "Cascara Java Library Conventions"
+            description = "Shared Java Library conventions for Cascara projects"
+            tags = ["java-setup", "api-configuration", "test-setup", "jar-manifest", "toolchain-configuration"]
+        }
+    }
+}
+

@@ -1,0 +1,111 @@
+plugins {
+    id("java-library")
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform(project(':cascara-meta-bom'))
+
+    implementation "io.github.qishr:cascara-common"
+    implementation "io.github.qishr:cascara-common-io"
+    implementation "io.github.qishr:cascara-lang-json"
+    implementation "io.github.qishr:cascara-lang-xml"
+    implementation "io.github.qishr:cascara-lang-yaml"
+    implementation "io.github.qishr:cascara-schema"
+    implementation "io.github.qishr:cascara-ui"
+    implementation "io.github.qishr:cascara-macos-files"
+}
+
+def yamlDirName = "$buildDir/jreleaser-yaml"
+def yamlDir = file(yamlDirName)
+
+def artifacts = configurations.runtimeClasspath
+    .resolvedConfiguration
+    .resolvedArtifacts
+    .findAll { it.moduleVersion.id.group == "io.github.qishr" }
+
+yamlDir.mkdirs()
+
+// --- NEW: Collect all artifact entries for a single YAML ---
+def artifactEntries = []
+
+tasks.register("createReleaseTasks") {
+    artifacts.each { art ->
+        def id = art.moduleVersion.id
+        def version = id.version
+        def moduleName = id.name
+        def originDir = art.file.parentFile
+        def base = art.file.name.replace(".jar", "")
+
+        def filesToCopy = [
+            art.file,
+            new File(originDir, "${base}.pom"),
+            new File(originDir, "${base}-sources.jar"),
+            new File(originDir, "${base}-javadoc.jar")
+        ]
+
+        def stagingDir = file("$buildDir/staging")
+        def moduleDir = file("$buildDir/staging/io/github/qishr/${moduleName}/${version}")
+
+        filesToCopy.each { f ->
+            if (f.exists()) {
+                copy {
+                    from f
+                    into moduleDir
+                }
+            }
+        }
+
+        // Add this module's artifacts to the single YAML list
+        artifactEntries += [
+            "    - path: ${moduleDir}/${moduleName}-${version}.jar",
+            "    - path: ${moduleDir}/${moduleName}-${version}.pom",
+            "    - path: ${moduleDir}/${moduleName}-${version}-sources.jar",
+            "    - path: ${moduleDir}/${moduleName}-${version}-javadoc.jar"
+        ]
+
+        println "Staged ${moduleName} (${version})"
+    }
+
+    doLast {
+        // Write ONE YAML file for all modules
+        def yaml = """
+project:
+  version: ${project.version}
+
+signing:
+  active: always
+  pgp:
+    armored: true
+
+files:
+  artifacts:
+${artifactEntries.join("\n")}
+
+deploy:
+  maven:
+    mavenCentral:
+      sonatype:
+        active: always
+        url: https://central.sonatype.com/api/v1/publisher
+        stagingRepositories:
+          - ${buildDir}/staging
+        applyMavenCentralRules: true
+"""
+
+        def yamlFile = new File(yamlDir, "release.yml")
+        yamlFile.text = yaml
+
+        println "Wrote unified YAML: ${yamlFile}"
+    }
+}
+
+tasks.register("releaseAll", Exec) {
+    dependsOn "createReleaseTasks"
+    // commandLine "jreleaser", "release", "--dry-run", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
+    commandLine "jreleaser", "release", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
+}

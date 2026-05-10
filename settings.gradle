@@ -1,0 +1,19 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.10.0'
+}
+
+include (":cascara-meta-bom")
+include (":cascara-meta-conventions")
+include (":cascara-meta-java-library")
+include (":cascara-meta-publish")
+include (":cascara-meta-release")
+
