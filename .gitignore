@@ -1,0 +1,15 @@
+/.gradle
+/.settings
+/.vscode
+.project
+cascara-meta-release/.classpath
+gradle/libs.versions.toml
+/out
+cascara-meta-publish/.classpath
+/cascara-meta-publish/.settings
+/cascara-meta-java-library/.settings
+/cascara-meta-release/.settings
+/cascara-meta-conventions/.settings
+cascara-meta-conventions/.classpath
+cascara-meta-java-library/.classpath
+/cascara-meta-bom/.settings
