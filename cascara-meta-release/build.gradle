@@ -17,7 +17,9 @@ dependencies {
     implementation "io.github.qishr:cascara-lang-yaml"
     implementation "io.github.qishr:cascara-schema"
     implementation "io.github.qishr:cascara-ui"
-    implementation "io.github.qishr:cascara-macos-files"
+    // implementation "io.github.qishr:cascara-macos-files"
+    implementation "io.github.qishr:cascara-macos-menus"
+    // implementation "io.github.qishr:cascara-module-core"
 }
 
 def yamlDirName = "$buildDir/jreleaser-yaml"
