@@ -44,9 +44,9 @@ class PublishPlugin implements Plugin<Project> {
                     }
                 }
 
-                project.signing {
-                    sign project.publishing.publications
-                }
+                // project.signing {
+                //     sign project.publishing.publications
+                // }
 
                 // // Ensure each publish task depends on its matching sign task
                 // project.publishing.publications.all { publication ->
