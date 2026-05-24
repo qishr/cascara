@@ -11,7 +11,7 @@ dependencies {
     implementation platform(project(':cascara-meta-bom'))
 
     implementation "io.github.qishr:cascara-common"
-    implementation "io.github.qishr:cascara-common-io"
+    // implementation "io.github.qishr:cascara-common-io"
     implementation "io.github.qishr:cascara-lang-json"
     implementation "io.github.qishr:cascara-lang-xml"
     implementation "io.github.qishr:cascara-lang-yaml"
@@ -25,14 +25,23 @@ dependencies {
 def yamlDirName = "$buildDir/jreleaser-yaml"
 def yamlDir = file(yamlDirName)
 
+// Parse -PexcludeArtifacts=mod1,mod2,mod3
+def excluded = (project.findProperty("excludeArtifacts") ?: "")
+        .split(",")
+        .collect { it.trim() }
+        .findAll { it }
+
 def artifacts = configurations.runtimeClasspath
     .resolvedConfiguration
     .resolvedArtifacts
     .findAll { it.moduleVersion.id.group == "io.github.qishr" }
+    .findAll { art ->
+        def name = art.moduleVersion.id.name
+        !excluded.contains(name)
+    }
 
 yamlDir.mkdirs()
 
-// --- NEW: Collect all artifact entries for a single YAML ---
 def artifactEntries = []
 
 tasks.register("createReleaseTasks") {
