@@ -48,7 +48,7 @@ This plugin provides:
 
 #### Java setup
 
-- Java toolchain 25
+- Java toolchain 21
 - Source Jars
 - Javadoc Jars
 
