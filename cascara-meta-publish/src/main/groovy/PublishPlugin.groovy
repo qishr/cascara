@@ -43,26 +43,6 @@ class PublishPlugin implements Plugin<Project> {
 
                     }
                 }
-
-                // project.signing {
-                //     sign project.publishing.publications
-                // }
-
-                // // Ensure each publish task depends on its matching sign task
-                // project.publishing.publications.all { publication ->
-                //     def pubName = publication.name.capitalize()
-
-                //     def signTask = project.tasks.named("sign${pubName}Publication")
-
-                //     project.tasks.matching { it.name == "publish${pubName}PublicationToMavenLocal" }.configureEach {
-                //         dependsOn(signTask)
-                //     }
-
-                //     project.tasks.matching { it.name == "publish${pubName}PublicationToMavenRepository" }.configureEach {
-                //         dependsOn(signTask)
-                //     }
-                // }
-
             }
         }
     }
