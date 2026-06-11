@@ -1,5 +1,3 @@
-// package io.github.qishr.cascara.meta
-
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.jvm.toolchain.JavaLanguageVersion
