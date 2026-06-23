@@ -23,20 +23,20 @@ dependencies {
         api 'org.testfx:testfx-junit5:4.0.18'
         api 'org.openjfx:javafx-controls:17.0.6'
 
-        api "io.github.qishr:cascara-common:1.1.1"
-        api "io.github.qishr:cascara-common-io:0.2.1"
+        api "io.github.qishr:cascara-common:1.1.2"
+        api "io.github.qishr:cascara-common-io:0.2.2"
         api "io.github.qishr:cascara-lang-css:0.1.0"
         api "io.github.qishr:cascara-lang-java:0.1.0"
-        api "io.github.qishr:cascara-lang-json:0.2.1"
+        api "io.github.qishr:cascara-lang-json:0.2.2"
         api "io.github.qishr:cascara-lang-jsonpath:0.1.0"
         api "io.github.qishr:cascara-lang-markdown:0.1.0"
         api "io.github.qishr:cascara-lang-xml:0.2.1"
-        api "io.github.qishr:cascara-lang-yaml:0.2.2"
+        api "io.github.qishr:cascara-lang-yaml:0.2.3"
         api 'io.github.qishr:cascara-macos-files:1.1.1'
         api 'io.github.qishr:cascara-macos-menus:0.2.0'
         api "io.github.qishr:cascara-module-core:0.1.0"
-        api "io.github.qishr:cascara-schema:0.2.2"
-        api "io.github.qishr:cascara-ui:0.2.3"
+        api "io.github.qishr:cascara-schema:0.2.3"
+        api "io.github.qishr:cascara-ui:0.2.4"
 
         // DO NOT inlcude JNA here, it will break things.
         // Include it with its specific version in build files that need it.
