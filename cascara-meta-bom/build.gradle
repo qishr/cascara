@@ -23,20 +23,20 @@ dependencies {
         api 'org.testfx:testfx-junit5:4.0.18'
         api 'org.openjfx:javafx-controls:17.0.6'
 
-        api "io.github.qishr:cascara-common:1.1.4"
-        api "io.github.qishr:cascara-common-io:0.4.0"
+        api "io.github.qishr:cascara-common:1.1.8"
+        api "io.github.qishr:cascara-common-io:0.6.0"
         api "io.github.qishr:cascara-lang-css:0.1.0"
         api "io.github.qishr:cascara-lang-java:0.1.0"
-        api "io.github.qishr:cascara-lang-json:0.4.0"
+        api "io.github.qishr:cascara-lang-json:0.6.0"
         api "io.github.qishr:cascara-lang-jsonpath:0.1.0"
         api "io.github.qishr:cascara-lang-markdown:0.1.0"
-        api "io.github.qishr:cascara-lang-xml:0.4.0"
-        api "io.github.qishr:cascara-lang-yaml:0.4.0"
+        api "io.github.qishr:cascara-lang-xml:0.6.0"
+        api "io.github.qishr:cascara-lang-yaml:0.6.0"
         api 'io.github.qishr:cascara-macos-files:1.1.1'
         api 'io.github.qishr:cascara-macos-menus:0.2.0'
         api "io.github.qishr:cascara-module-core:0.1.0"
-        api "io.github.qishr:cascara-schema:0.4.0"
-        api "io.github.qishr:cascara-ui:0.4.0"
+        api "io.github.qishr:cascara-schema:0.6.0"
+        api "io.github.qishr:cascara-ui:0.6.0"
 
         // DO NOT inlcude JNA here, it will break things.
         // Include it with its specific version in build files that need it.
@@ -48,17 +48,26 @@ publishing {
     publications {
         mavenBom(MavenPublication) {
             from components.javaPlatform
-        }
-    }
-    repositories {
-        maven {
-            name = "MavenCentral"
-            url = version.endsWith("SNAPSHOT")
-                ? uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                : uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = findProperty("ossrhUsername")
-                password = findProperty("ossrhPassword")
+            pom {
+                name.set("Cascara Meta BOM")
+                description.set("Bill of Materials for Cascara modules")
+                url.set("https://github.com/qishr/cascara")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+
+                scm {
+                    url.set("https://github.com/qishr/cascara")
+                }
+
+                developers {
+                    developer {
+                        name.set("Sandy")
+                    }
+                }
             }
         }
     }

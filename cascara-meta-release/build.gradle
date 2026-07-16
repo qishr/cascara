@@ -68,18 +68,42 @@ tasks.register("createReleaseTasks") {
                     from f
                     into moduleDir
                 }
+                artifactEntries += "    - path: ${moduleDir}/${f.name}"
             }
         }
 
-        // Add this module's artifacts to the single YAML list
-        artifactEntries += [
-            "    - path: ${moduleDir}/${moduleName}-${version}.jar",
-            "    - path: ${moduleDir}/${moduleName}-${version}.pom",
-            "    - path: ${moduleDir}/${moduleName}-${version}-sources.jar",
-            "    - path: ${moduleDir}/${moduleName}-${version}-javadoc.jar"
-        ]
+        // // Add this module's artifacts to the single YAML list
+        // artifactEntries += [
+        //     "    - path: ${moduleDir}/${moduleName}-${version}.jar",
+        //     "    - path: ${moduleDir}/${moduleName}-${version}.pom",
+        //     "    - path: ${moduleDir}/${moduleName}-${version}-sources.jar",
+        //     "    - path: ${moduleDir}/${moduleName}-${version}-javadoc.jar"
+        // ]
 
         println "Staged ${moduleName} (${version})"
+    }
+
+    // 2. ALWAYS stage the BOM POM
+    def bomPom = file("${project(':cascara-meta-bom').buildDir}/publications/mavenBom/pom-default.xml")
+    // def bomPom = file("${project(':cascara-meta-bom').buildDir}/publications/mavenBom/mavenBom.pom")
+    if (bomPom.exists()) {
+        def bomVersion = project(":cascara-meta-bom").version
+        def bomDir = file("$buildDir/staging/io/github/qishr/cascara-meta-bom/${bomVersion}")
+        bomDir.mkdirs()
+
+        copy {
+            from bomPom
+            into bomDir
+            rename { "cascara-meta-bom-${bomVersion}.pom" }
+        }
+
+        artifactEntries += [
+            "    - path: ${bomDir}/cascara-meta-bom-${bomVersion}.pom"
+        ]
+
+        println "Staged cascara-meta-bom (${bomVersion})"
+    } else {
+        println "WARNING: BOM POM not found at ${bomPom}"
     }
 
     doLast {
@@ -93,6 +117,13 @@ signing:
   pgp:
     armored: true
 
+checksum:
+  algorithms:
+    - md5
+    - sha1
+    - sha256
+    - sha512
+
 files:
   artifacts:
 ${artifactEntries.join("\n")}
@@ -105,6 +136,7 @@ deploy:
         url: https://central.sonatype.com/api/v1/publisher
         stagingRepositories:
           - ${buildDir}/staging
+        # applyMavenCentralRules: false
         applyMavenCentralRules: true
 """
 
@@ -119,4 +151,9 @@ tasks.register("releaseAll", Exec) {
     dependsOn "createReleaseTasks"
     // commandLine "jreleaser", "release", "--dry-run", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
     commandLine "jreleaser", "release", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
+}
+
+
+tasks.named("createReleaseTasks") {
+    dependsOn(":cascara-meta-bom:publishMavenBomPublicationToMavenLocal")
 }
