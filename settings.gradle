@@ -13,6 +13,7 @@ plugins {
 
 include (":cascara-meta-bom")
 include (":cascara-meta-conventions")
+include (":cascara-meta-java-app")
 include (":cascara-meta-java-library")
 include (":cascara-meta-publish")
 include (":cascara-meta-release")

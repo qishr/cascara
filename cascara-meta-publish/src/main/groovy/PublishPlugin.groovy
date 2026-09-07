@@ -48,6 +48,10 @@ class PublishPlugin implements Plugin<Project> {
     }
 
     private static void configurePom(MavenPublication pub, Project project) {
+        // Explicitly set the published Maven artifactId from gradle.properties
+        if (project.hasProperty("maven_name")) {
+            pub.artifactId = project.property("maven_name").toString()
+        }
         pub.pom {
             withXml {
                 def deps = asNode().dependencies?.dependency

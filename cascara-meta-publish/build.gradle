@@ -1,7 +1,23 @@
+import org.gradle.api.plugins.quality.CodeNarcExtension
+
 plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id("com.gradle.plugin-publish") version "1.2.1"
+    id 'codenarc'
+}
+
+
+dependencies {
+    codenarc 'org.codenarc:CodeNarc:3.6.0-groovy-4.0'
+}
+
+
+extensions.configure(CodeNarcExtension) {
+    it.configFile = file('config/codenarc/codenarc.groovy')
+    it.maxPriority1Violations = 0
+    it.maxPriority2Violations = 0
+    it.maxPriority3Violations = 0
 }
 
 
