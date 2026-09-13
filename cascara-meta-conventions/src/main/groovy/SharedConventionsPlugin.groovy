@@ -83,6 +83,7 @@ class SharedConventionsPlugin implements Plugin<Project> {
                 'Implementation-Title': project.providers.gradleProperty('maven_name'),
                 'Implementation-Version': project.version,
                 'Implementation-Vendor': project.group,
+                'Cascara-Version': project.cascara_version,
                 'Build-Date': isoDate
             )
         }

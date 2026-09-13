@@ -12,6 +12,8 @@ dependencies {
 
     implementation "io.github.qishr:cascara-common"
     implementation "io.github.qishr:cascara-common-io"
+    implementation "io.github.qishr:cascara-format-vsix"
+    implementation "io.github.qishr:cascara-lang-ct"
     implementation "io.github.qishr:cascara-lang-json"
     implementation "io.github.qishr:cascara-lang-xml"
     implementation "io.github.qishr:cascara-lang-yaml"
