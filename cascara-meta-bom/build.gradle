@@ -25,7 +25,7 @@ dependencies {
 
         api "io.github.qishr:cascara-common:1.1.13"
         api "io.github.qishr:cascara-common-io:0.10.0"
-        api "io.github.qishr:cascara-format-vsix:0.10.0"
+        api "io.github.qishr:cascara-format-vsix:0.10.3"
         api "io.github.qishr:cascara-lang-css:0.1.0"
         api "io.github.qishr:cascara-lang-ct:0.10.0"
         api "io.github.qishr:cascara-lang-java:0.1.0"
