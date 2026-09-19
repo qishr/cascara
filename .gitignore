@@ -1,7 +1,10 @@
-/.gradle
-/.settings
-/.vscode
+.gradle
+.settings
+.vscode
 .project
+.classpath
+.project
+
 cascara-meta-release/.classpath
 gradle/libs.versions.toml
 /out

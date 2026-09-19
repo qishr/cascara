@@ -1,0 +1,55 @@
+[
+    {
+        "name": "io.github.qishr.cascara.common.util.*",
+
+        "allDeclaredClasses": true,
+        "allDeclaredMethods": true,
+        "allDeclaredFields": true,
+        "allDeclaredConstructors": true,
+
+        "allPublicClasses": true,
+        "allPublicMethods": true,
+        "allPublicFields": true,
+        "allPublicConstructors": true,
+
+        "queryAllDeclaredConstructors": true,
+        "queryAllDeclaredMethods": true,
+        "queryAllPublicConstructors": true,
+        "queryAllPublicMethods": true,
+
+        "allNestMembers": true
+    },
+    {
+        "name" : "io.github.qishr.cascara.common.util.CommandLine$AutoHelpMixin",
+        "allDeclaredConstructors" : true,
+        "allPublicConstructors" : true,
+        "allDeclaredMethods" : true,
+        "allPublicMethods" : true,
+        "fields" : [
+          { "name" : "helpRequested" },
+          { "name" : "versionRequested" }
+        ]
+      },
+      {
+        "name": "io.github.qishr.cascara.common.util.ContentType",
+        "queryAllDeclaredConstructors": true,
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+    },
+    {
+        "name": "io.github.qishr.cascara.common.content.type.ContentTypeRegistry",
+        "queryAllDeclaredConstructors": true,
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+    },
+    {
+        "name": "io.github.qishr.cascara.comman.casc.CascCommand$VersionProvider",
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "queryAllDeclaredConstructors": true
+    }
+  ]

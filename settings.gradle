@@ -11,6 +11,7 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
+include (":casc-command")
 include (":cascara-meta-bom")
 include (":cascara-meta-conventions")
 include (":cascara-meta-java-app")

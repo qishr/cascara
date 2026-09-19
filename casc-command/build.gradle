@@ -1,0 +1,87 @@
+plugins {
+    id "io.github.qishr.cascara-meta.java-app" version "0.1.0"
+    id 'org.graalvm.buildtools.native' version '0.10.2'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation(platform("io.github.qishr:cascara-meta-bom:${project.version}"))
+
+    // JUnit
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Cascara
+    implementation "io.github.qishr:cascara-common"
+    implementation "io.github.qishr:cascara-common-io"
+
+}
+
+
+def cmdArgs = (project.findProperty("args") ?: "")
+        .split(" ")
+        .collect { it.trim() }
+        .findAll { it }
+
+
+application {
+    // Define the main class for the application.
+    mainClass = 'io.github.qishr.cascara.command.casc.CascCommand'
+    mainModule = 'cascara.command.casc'
+}
+
+
+run {
+    mainClass = 'io.github.qishr.cascara.command.casc.CascCommand'
+    mainModule = 'cascara.command.casc'
+
+    args = cmdArgs
+
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.addStringOption('Xdoclint:-missing', '-quiet')
+}
+
+graalvmNative {
+    binaries.all {
+        resources.autodetect()
+    }
+    toolchainDetection = false
+}
+
+graalvmNative {
+    binaries {
+        main {
+            imageName = 'ct'
+            mainClass = 'io.github.qishr.cascara.lang.ct.exec.CtRunner'
+
+            // Helpful build flags for CLI binaries
+            buildArgs.addAll([
+                '--no-fallback',                     // Fail build if standard JVM image is required
+                "-Dapp.version=${project.version}",
+                '--enable-url-protocols=http,https', // If fetching remote resources
+                '-H:+ReportExceptionStackTraces',
+                '-Ob',
+                '-H:IncludeResources=.*\\.ct$',
+                '-H:IncludeResources=.*\\.json$',
+                '-H:+GenerateEmbeddedResourcesFile'
+            ])
+        }
+    }
+}

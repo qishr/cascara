@@ -79,11 +79,17 @@ class SharedConventionsPlugin implements Plugin<Project> {
                 .atOffset(ZoneOffset.UTC)
                 .format(DateTimeFormatter.ISO_INSTANT)
 
+            def versionParts = project.cascara_version.toString().tokenize('.')
+            def major = versionParts[0]
+            def minor = versionParts[1]
+            def defaultMinVersion = "${major}.${minor}.0"
+
             jar.manifest.attributes(
                 'Implementation-Title': project.providers.gradleProperty('maven_name'),
                 'Implementation-Version': project.version,
                 'Implementation-Vendor': project.group,
                 'Cascara-Version': project.cascara_version,
+                'Min-Cascara-Version': project.findProperty('min_cascara_version') ?: defaultMinVersion,
                 'Build-Date': isoDate
             )
         }
