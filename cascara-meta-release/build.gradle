@@ -17,6 +17,8 @@ repositories {
 dependencies {
     implementation platform(project(':cascara-meta-bom'))
 
+    implementation "io.github.qishr:cascara-test-common-junit"
+
     implementation "io.github.qishr:cascara-common"
     implementation "io.github.qishr:cascara-common-io"
     implementation "io.github.qishr:cascara-format-vsix"
