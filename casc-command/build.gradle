@@ -44,9 +44,7 @@ application {
 run {
     mainClass = 'io.github.qishr.cascara.command.casc.CascCommand'
     mainModule = 'cascara.command.casc'
-
     args = cmdArgs
-
 }
 
 tasks.named('test') {
@@ -68,18 +66,18 @@ graalvmNative {
 graalvmNative {
     binaries {
         main {
-            imageName = 'ct'
-            mainClass = 'io.github.qishr.cascara.lang.ct.exec.CtRunner'
+            imageName = 'casc'
+            mainClass = 'io.github.qishr.cascara.command.casc.CascCommand'
 
             // Helpful build flags for CLI binaries
             buildArgs.addAll([
                 '--no-fallback',                     // Fail build if standard JVM image is required
-                "-Dapp.version=${project.version}",
-                '--enable-url-protocols=http,https', // If fetching remote resources
+                "-Dcommand.version=${project.version}",
+                "-Dcascara.version=${project.cascara_version}",
+                '--initialize-at-build-time=io.github.qishr.cascara.command.casc.CascCommand',
+                '--enable-url-protocols=http,https', // For fetching remote resources
                 '-H:+ReportExceptionStackTraces',
                 '-Ob',
-                '-H:IncludeResources=.*\\.ct$',
-                '-H:IncludeResources=.*\\.json$',
                 '-H:+GenerateEmbeddedResourcesFile'
             ])
         }

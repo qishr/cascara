@@ -14,6 +14,7 @@
 package io.github.qishr.cascara.command.casc;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -34,29 +35,27 @@ import io.github.qishr.cascara.common.util.UriScheme;
         versionProvider = CascCommand.VersionProvider.class,
         description = "`casc` command.")
 public class CascCommand implements Callable<Integer> {
+
+    // Read properties at class initialization time
+    private static final String COMMAND_VERSION_PROP = System.getProperty("command.version");
+    private static final String CASCARA_VERSION_PROP = System.getProperty("cascara.version");
+
     // @Parameters(index = "0", description = "The CT script to execute.")
     // private String inFile;
 
-    // @Option(names = {"-o", "--output"}, description = "Output file name")
-    // private String outFile;
-
-    // @Option(names = {"-f", "--format"}, description = "Output format[s]")
-    // private String outputFormats;
-
-    // @Option(names = {"--verbose"}, description = "Debug output")
-    // private boolean verbose = false;
+    @Option(names = {"-H"}, description = "Specify Cascara home directory")
+    private String homePath;
 
     @Option(names = {"-i", "--info"}, description = "Display Cascara Information")
     private boolean info;
 
     public static class VersionProvider implements CommandLine.IVersionProvider {
         // Public no-arg constructor required by Picocli factory / GraalVM reflection
-        public VersionProvider() {
-        }
+        public VersionProvider() {}
 
         @Override
         public String[] getVersion() {
-            return new String[] { "Cascara " + CascCommand.getVersion() };
+            return new String[] { "Cascara " + CascCommand.getCascaraVersion() };
         }
     }
 
@@ -73,6 +72,10 @@ public class CascCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws LocalizableIOException {
+        if (homePath != null) {
+            Cascara.setHomePath(Path.of(homePath));
+        }
+
         // The following call is neccessary when running in Graalvm.
         // Normally it happens automatically.
         IOUtils.setResourceProvider(UriScheme.RES, new ResResourceProvider(CascCommand.class));
@@ -84,25 +87,31 @@ public class CascCommand implements Callable<Integer> {
         return 0;
     }
 
-    public static String getVersion() {
-        JarManifest manifest;
-        try {
-            manifest = JarManifest.parse(JreUtils.getResourceAsString(CascCommand.class, "/META-INF/MANIFEST.MF"));
-        } catch (IOException e) {
-            return "0.0.0";
+    public static String getCascaraVersion() {
+        if (CASCARA_VERSION_PROP == null) {
+            return Cascara.getVersion().toString();
+        } else {
+            return CASCARA_VERSION_PROP;
         }
-        return manifest.getString("Implementation-Version", "0.0.0");
+    }
+
+    public static String getCommandVersion() {
+        if (COMMAND_VERSION_PROP == null) {
+            JarManifest manifest;
+            try {
+                manifest = JarManifest.parse(JreUtils.getResourceAsString(CascCommand.class, "/META-INF/MANIFEST.MF"));
+            } catch (IOException e) {
+                return "0.0.0";
+            }
+            return manifest.getString("Implementation-Version", "0.0.0");
+        } else {
+            return COMMAND_VERSION_PROP;
+        }
     }
 
     private void displayInfo() {
-        // JarManifest manifest;
-        // try {
-        //     manifest = JarManifest.parse(JreUtils.getResourceAsString(Cascara.class, "/META-INF/MANIFEST.MF"));
-        // } catch (IOException e) {
-        //     return;
-        // }
-        // String version = manifest.getString("Implementation-Version", "0.0.0");
-        output("Command version: " + getVersion());
+        output("Command version: " + getCommandVersion());
+        output("Cascara build version: " + getCascaraVersion());
 
         if (Cascara.getHomeEnvVar() != null) {
             output("Cascara home env var: " + Cascara.getHomeEnvVar());
@@ -112,7 +121,7 @@ public class CascCommand implements Callable<Integer> {
         output("Content types: " + Cascara.getContentTypesPath());
         output("Schemas: " + Cascara.getSchemasPath());
 
-        output("Active version: " + Cascara.getActiveVersionString());
+        output("Active installation: " + Cascara.getActiveVersionString());
 
         List<String> installedVersions = Cascara.getInstalledVersions();
         if (installedVersions.isEmpty()) {

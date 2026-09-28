@@ -47,9 +47,18 @@
         "allDeclaredMethods": true
     },
     {
-        "name": "io.github.qishr.cascara.comman.casc.CascCommand$VersionProvider",
+        "name": "io.github.qishr.cascara.command.casc.CascCommand",
+        "queryAllDeclaredConstructors": true,
         "allDeclaredConstructors": true,
         "allPublicConstructors": true,
-        "queryAllDeclaredConstructors": true
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+    },
+    {
+        "name": "io.github.qishr.cascara.command.casc.CascCommand$VersionProvider",
+        "queryAllDeclaredConstructors": true,
+        "queryAllPublicConstructors": true,
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true
     }
-  ]
+]
