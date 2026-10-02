@@ -1,6 +1,7 @@
 module cascara.command.casc {
     requires transitive cascara.common;
     requires cascara.common.io;
+    requires cascara.schema;
 
     exports io.github.qishr.cascara.command.casc to cascara.common;
 

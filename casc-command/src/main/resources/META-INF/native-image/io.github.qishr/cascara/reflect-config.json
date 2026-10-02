@@ -60,5 +60,48 @@
         "queryAllPublicConstructors": true,
         "allDeclaredConstructors": true,
         "allPublicConstructors": true
+    },
+    {
+        "name": "io.github.qishr.cascara.command.casc.CascCommand$Info",
+        "queryAllDeclaredConstructors": true,
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+    },
+    {
+        "name": "io.github.qishr.cascara.command.casc.CascCommand$Get",
+        "queryAllDeclaredConstructors": true,
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+    },
+    {
+        "name": "io.github.qishr.cascara.schema.util.CascaraSchemaResourceProvider",
+        "queryAllDeclaredConstructors": true,
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredMethods" : true,
+        "allPublicMethods" : true,
+        "allDeclaredFields": true
+    },
+    {
+        "name": "io.github.qishr.cascara.schema.util.SchemaResolverImpl",
+        "queryAllDeclaredConstructors": true,
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredMethods" : true,
+        "allPublicMethods" : true,
+        "allDeclaredFields": true
+    },
+    {
+        "name": "io.github.qishr.cascara.common.content.type.ContentTypeStore",
+        "queryAllDeclaredConstructors": true,
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredMethods" : true,
+        "allPublicMethods" : true,
+        "allDeclaredFields": true
     }
 ]

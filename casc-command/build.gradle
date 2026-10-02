@@ -24,7 +24,7 @@ dependencies {
     // Cascara
     implementation "io.github.qishr:cascara-common"
     implementation "io.github.qishr:cascara-common-io"
-
+    implementation "io.github.qishr:cascara-schema"
 }
 
 
@@ -76,6 +76,7 @@ graalvmNative {
                 "-Dcascara.version=${project.cascara_version}",
                 '--initialize-at-build-time=io.github.qishr.cascara.command.casc.CascCommand',
                 '--enable-url-protocols=http,https', // For fetching remote resources
+                '-H:IncludeResources=.*\\.class',
                 '-H:+ReportExceptionStackTraces',
                 '-Ob',
                 '-H:+GenerateEmbeddedResourcesFile'
