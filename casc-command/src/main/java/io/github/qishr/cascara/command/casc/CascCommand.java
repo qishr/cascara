@@ -1,16 +1,3 @@
-// License & Terms
-//
-// This file is part of **Cascara CT**.
-//
-// **Cascara CT** is free software: you can redistribute
-// it and/or modify them without restriction under the terms of
-// the MIT License.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// MIT License for more details.
-
 package io.github.qishr.cascara.command.casc;
 
 import java.io.IOException;
@@ -34,7 +21,6 @@ import io.github.qishr.cascara.common.util.CommandLine.Parameters;
 import io.github.qishr.cascara.common.util.JarManifest;
 import io.github.qishr.cascara.common.util.JreUtils;
 import io.github.qishr.cascara.common.util.UriScheme;
-import io.github.qishr.cascara.schema.util.CascaraSchemaResourceProvider;
 
 @Command(name = "casc",
         mixinStandardHelpOptions = true,

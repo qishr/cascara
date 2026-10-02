@@ -70,7 +70,7 @@ publishing {
 
                 developers {
                     developer {
-                        name.set("Sandy")
+                        name.set("Cascara")
                     }
                 }
             }

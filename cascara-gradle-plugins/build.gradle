@@ -1,0 +1,16 @@
+plugins {
+    id 'codenarc'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+task publishToMavenLocal {
+    group = 'publishing'
+    description = 'Publishes all meta subprojects to mavenLocal'
+    dependsOn subprojects.collect { sub ->
+        sub.tasks.matching { it.name == 'publishToMavenLocal' }
+    }
+}

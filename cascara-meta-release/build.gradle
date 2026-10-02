@@ -62,6 +62,19 @@ yamlDir.mkdirs()
 
 def artifactEntries = []
 
+// tasks.register("createReleaseTasks") {
+//     doLast {
+//         def artifacts = configurations.runtimeClasspath
+//             .resolvedConfiguration
+//             .resolvedArtifacts
+//             .findAll { it.moduleVersion.id.group == "io.github.qishr" }
+//             .findAll { art ->
+//                 def name = art.moduleVersion.id.name
+//                 !excluded.contains(name) && (included.isEmpty() || include.contains(name))
+//             }
+//     }
+// }
+
 tasks.register("createReleaseTasks") {
     artifacts.each { art ->
         def id = art.moduleVersion.id

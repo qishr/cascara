@@ -1,5 +1,3 @@
-// package io.github.qishr.cascara.meta
-
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.ZoneOffset
@@ -20,6 +18,11 @@ class SharedConventionsPlugin implements Plugin<Project> {
         project.pluginManager.apply 'jacoco'
         project.pluginManager.apply 'signing'
         project.pluginManager.apply 'maven-publish'
+
+        project.base {
+            archivesName =
+                project.findProperty('maven_name') ?: project.name
+        }
 
         project.tasks.withType(JavaCompile).configureEach { compile ->
             compile.options.compilerArgs.addAll(["--module-version", "${project.version}"])
