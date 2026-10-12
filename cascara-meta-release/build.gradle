@@ -26,6 +26,7 @@ dependencies {
     implementation "io.github.qishr:cascara-lang-json"
     implementation "io.github.qishr:cascara-lang-xml"
     implementation "io.github.qishr:cascara-lang-yaml"
+    implementation "io.github.qishr:cascara-logging-log4j"
     implementation "io.github.qishr:cascara-schema"
     implementation "io.github.qishr:cascara-ui"
 

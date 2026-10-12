@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 
 import io.github.qishr.cascara.command.casc.CascCommand.Get;
 import io.github.qishr.cascara.common.content.ResourceContent;
-import io.github.qishr.cascara.common.diagnostic.LocalizableIOException;
+import io.github.qishr.cascara.common.diagnostic.exception.LocalizableIOException;
 import io.github.qishr.cascara.common.io.IOUtils;
 import io.github.qishr.cascara.common.io.provider.ResResourceProvider;
 import io.github.qishr.cascara.common.service.SPL;
