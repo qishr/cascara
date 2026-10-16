@@ -9,8 +9,8 @@ dependencies {
 }
 
 gradlePlugin {
-    website = "https://github.com/qishr/cascara-build-logic"
-    vcsUrl = "https://github.com/qishr/cascara-build-logic"
+    website = "https://github.com/qishr/cascara"
+    vcsUrl = "https://github.com/qishr/cascara"
     plugins {
         javaLibraryConventions {
             id = "io.github.qishr.cascara-meta.java-library"

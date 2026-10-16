@@ -1,5 +1,3 @@
-// package io.github.qishr.cascara.meta
-
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
@@ -8,95 +6,84 @@ class PublishPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-
         project.pluginManager.apply("maven-publish")
         project.pluginManager.apply("signing")
 
-        project.afterEvaluate {
-            if (project.plugins.hasPlugin("maven-publish")) {
-                project.publishing {
-                    publications { pubs ->
+        // Extract configuration-phase properties as plain strings to avoid capturing 'project'
+        def projName = project.name
+        def mavenName = project.hasProperty("maven_name") ? project.property("maven_name").toString() : projName
+        def projTitle = project.hasProperty("title") ? project.property("title").toString() : projName
+        def projDesc = project.description ?: ""
+        def projUrl = project.hasProperty("url") ? project.property("url").toString() : null
+        def overrideLicense = project.hasProperty("overrideLicense") ? project.property("overrideLicense").toString() : null
+        def scmUrl = project.hasProperty("scm_url") ? project.property("scm_url").toString() : null
+        def scmConn = project.hasProperty("scm_conn") ? project.property("scm_conn").toString() : null
+        def scmDevConn = project.hasProperty("scm_dev_conn") ? project.property("scm_dev_conn").toString() : null
 
-                        project.plugins.withId("java-gradle-plugin") {
-                            project.publishing.publications.withType(MavenPublication).configureEach { pub ->
-                                configurePom(pub, project)
-                            }
+        project.extensions.configure('publishing') { publishing ->
+            publishing.publications { pubs ->
+
+                project.plugins.withId("java-gradle-plugin") {
+                    pubs.withType(MavenPublication).configureEach { pub ->
+                        configurePom(pub, mavenName, projTitle, projDesc, projUrl, overrideLicense, scmUrl, scmConn, scmDevConn)
+                    }
+                }
+
+                project.plugins.withId("java-library") {
+                    pubs.create("mavenJava", MavenPublication) { pub ->
+                        pub.from(project.components.getByName("java"))
+                        configurePom(pub, mavenName, projTitle, projDesc, projUrl, overrideLicense, scmUrl, scmConn, scmDevConn)
+                    }
+                }
+
+                project.plugins.withId("java-platform") {
+                    if (!pubs.names.contains("mavenBom")) {
+                        pubs.create("mavenBom", MavenPublication) { pub ->
+                            pub.from(project.components.getByName("javaPlatform"))
+                            configurePom(pub, mavenName, projTitle, projDesc, projUrl, overrideLicense, scmUrl, scmConn, scmDevConn)
+
+                            pub.suppressPomMetadataWarningsFor("apiElements")
+                            pub.suppressPomMetadataWarningsFor("runtimeElements")
                         }
-
-
-                        project.plugins.withId("java-library") {
-                            project.publishing.publications.create("mavenJava", MavenPublication) { pub ->
-                                pub.from(project.components.getByName("java"))
-                                configurePom(pub, project)
-                            }
-                        }
-
-
-                        project.plugins.withId("java-platform") {
-                            if (!publishing.publications.names.contains("mavenBom")) {
-                                project.publishing.publications.create("mavenBom", MavenPublication) { pub ->
-                                    pub.from(project.components.getByName("javaPlatform"))
-                                    configurePom(pub, project)
-                                }
-                            }
-                        }
-
                     }
                 }
             }
         }
     }
 
-    private static void configurePom(MavenPublication pub, Project project) {
-        // Explicitly set the published Maven artifactId from gradle.properties
-        if (project.hasProperty("maven_name")) {
-            pub.artifactId = project.property("maven_name").toString()
-        }
+    private static void configurePom(MavenPublication pub,
+                                     String mavenName,
+                                     String projTitle,
+                                     String projDesc,
+                                     String projUrl,
+                                     String overrideLicense,
+                                     String scmUrl,
+                                     String scmConn,
+                                     String scmDevConn) {
+
+        pub.artifactId = mavenName
+
         pub.pom {
-            withXml {
-                def deps = asNode().dependencies?.dependency
-                if (deps) {
-                    deps.each { dep ->
-                        if (!dep.version) {
-                            def group = dep.groupId.text()
-                            def name  = dep.artifactId.text()
-                            def v = project.configurations.runtimeClasspath
-                                .resolvedConfiguration
-                                .firstLevelModuleDependencies
-                                .find { it.moduleGroup == group && it.moduleName == name }
-                                ?.moduleVersion
-
-                            if (v) {
-                                dep.appendNode('version', v)
-                            }
-                        }
-                    }
-                }
-            }
-
-            name = project.title
-            description = project.description
-            url = project.url
+            name = projTitle
+            description = projDesc
+            url = projUrl
 
             licenses {
                 license {
-                    if (project.hasProperty("overrideLicense") &&
-                        project.property("overrideLicense") == "MIT") {
-
+                    if (overrideLicense == "MIT") {
                         name = "MIT License"
                         url = "https://opensource.org/licenses/MIT"
-
                     } else {
-                        name = "Apache License 2.0"
-                        url = "https://www.apache.org/licenses/LICENSE-2.0"
+                        name = "GPL 3.0"
+                        url = "https://opensource.org/license/gpl-3.0"
                     }
                 }
             }
 
             scm {
-                url = project.scm_url
-                connection = project.scm_conn
-                developerConnection = project.scm_dev_conn
+                url = scmUrl
+                connection = scmConn
+                developerConnection = scmDevConn
             }
 
             developers {

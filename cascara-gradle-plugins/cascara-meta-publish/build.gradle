@@ -7,6 +7,11 @@ plugins {
     id 'codenarc'
 }
 
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
 dependencies {
     codenarc 'org.codenarc:CodeNarc:3.6.0-groovy-4.0'
 }
@@ -19,8 +24,8 @@ extensions.configure(CodeNarcExtension) {
 }
 
 gradlePlugin {
-    website = "https://github.com/qishr/cascara-build-logic"
-    vcsUrl = "https://github.com/qishr/cascara-build-logic"
+    website = "https://github.com/qishr/cascara"
+    vcsUrl = "https://github.com/qishr/cascara"
     plugins {
         sharedConventions {
             id = "io.github.qishr.cascara-meta.publish"

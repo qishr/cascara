@@ -57,7 +57,7 @@ publishing {
             pom {
                 name.set("Cascara Meta BOM")
                 description.set("Bill of Materials for Cascara modules")
-                url.set("https://github.com/qishr/cascara")
+                url.set("https://qishr.github.io/cascara")
                 licenses {
                     license {
                         name.set("MIT License")

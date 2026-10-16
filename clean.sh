@@ -1,1 +1,1 @@
-rm -rf build out */build */out */bin
+rm -rf build out */build */out */bin */*/build */*/out */*/bin
