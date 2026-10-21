@@ -9,11 +9,11 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 gradlePlugin {
-    website = "https://qishr.github.io/cascara/building"
+    website = "https://qishr.github.io/cascara/getting-started/building-from-source"
     vcsUrl = "https://github.com/qishr/cascara"
     plugins {
         sharedConventions {
-            id = "io.github.qishr.cascara-meta.shared-conventions"
+            id = "io.github.qishr.cascara.conventions"
             implementationClass = "SharedConventionsPlugin"
             displayName = "Cascara Shared Conventions"
             description = "Shared Gradle conventions for Cascara library and app modules"

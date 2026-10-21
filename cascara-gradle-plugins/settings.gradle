@@ -9,6 +9,6 @@ pluginManagement {
 rootProject.name = 'cascara-meta'
 
 include 'cascara-meta-conventions'
-include 'cascara-meta-java-library'
-include 'cascara-meta-java-app'
+// include 'cascara-meta-java-library'
+// include 'cascara-meta-java-app'
 include 'cascara-meta-publish'
