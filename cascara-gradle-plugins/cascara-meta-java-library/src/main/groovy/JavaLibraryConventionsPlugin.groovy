@@ -12,7 +12,7 @@ class JavaLibraryConventionsPlugin implements Plugin<Project> {
         project.extensions.configure(org.gradle.api.plugins.JavaPluginExtension) { java ->
             java.withJavadocJar()
             java.withSourcesJar()
-            java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+            java.toolchain.languageVersion = JavaLanguageVersion.of(21)
         }
 
     }

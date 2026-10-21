@@ -4,16 +4,20 @@ plugins {
     id "com.gradle.plugin-publish" version "1.2.1"
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+}
+
 gradlePlugin {
-    website = "https://github.com/qishr/cascara"
+    website = "https://qishr.github.io/cascara/building"
     vcsUrl = "https://github.com/qishr/cascara"
     plugins {
         sharedConventions {
             id = "io.github.qishr.cascara-meta.shared-conventions"
             implementationClass = "SharedConventionsPlugin"
             displayName = "Cascara Shared Conventions"
-            description = "Shared Gradle conventions for Cascara projects"
-            tags = ["conventions", "build-setup", "test-coverage", "jar-manifest", "runtime-setup"]
+            description = "Shared Gradle conventions for Cascara library and app modules"
+            tags = ["cascara", "cascara-meta", "test-coverage", "test-logging", "jar-manifest", "configuration"]
         }
     }
 }

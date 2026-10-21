@@ -12,6 +12,10 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+}
+
 dependencies {
     codenarc 'org.codenarc:CodeNarc:3.6.0-groovy-4.0'
 }
@@ -24,14 +28,14 @@ extensions.configure(CodeNarcExtension) {
 }
 
 gradlePlugin {
-    website = "https://github.com/qishr/cascara"
+    website = "https://qishr.github.io/cascara/building"
     vcsUrl = "https://github.com/qishr/cascara"
     plugins {
         sharedConventions {
             id = "io.github.qishr.cascara-meta.publish"
             implementationClass = "PublishPlugin"
             displayName = "Cascara Publishing Conventions"
-            description = "Shared Publishing conventions for Cascara projects"
+            description = "Shared conventions for locally publishing Cascara modules"
             tags = ["artifact-signing", "release-setup", "metadata-configuration", "version-coordination", "artifact-structure"]
         }
     }

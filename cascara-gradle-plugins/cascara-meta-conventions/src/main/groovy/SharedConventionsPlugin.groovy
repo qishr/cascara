@@ -19,6 +19,13 @@ class SharedConventionsPlugin implements Plugin<Project> {
         project.pluginManager.apply 'signing'
         project.pluginManager.apply 'maven-publish'
 
+        // --- Java configuration ---
+        project.extensions.configure(org.gradle.api.plugins.JavaPluginExtension) { java ->
+            java.withJavadocJar()
+            java.withSourcesJar()
+            java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+        }
+
         project.base {
             archivesName =
                 project.findProperty('maven_name') ?: project.name
@@ -56,10 +63,6 @@ class SharedConventionsPlugin implements Plugin<Project> {
                 showStackTraces = true
             }
 
-            test.testLogging {
-                showStandardStreams = true
-                events TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED
-            }
             test.finalizedBy 'jacocoTestReport'
         }
 
