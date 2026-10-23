@@ -160,12 +160,13 @@ abstract class ReleaseStager extends DefaultTask {
             .toFile()
 
         if (bomPom.exists()) {
-            def bomProperties = new Properties()
-            rootDirFile.parentFile.toPath()
-                .resolve("cascara-meta-build/cascara-meta-bom/gradle.properties")
-                .toFile().withInputStream { bomProperties.load(it) }
+            // def bomProperties = new Properties()
+            // rootDirFile.parentFile.toPath()
+            //     .resolve("cascara-meta-build/cascara-meta-bom/gradle.properties")
+            //     .toFile().withInputStream { bomProperties.load(it) }
 
-            def bomVersion = bomProperties.getProperty('cascara_version')
+            // def bomVersion = bomProperties.getProperty('cascara_version')
+            def bomVersion = projectVersion.get()
 
             def bomDir = new File(buildDir, "staging/io/github/qishr/cascara-meta-bom/${bomVersion}")
             bomDir.mkdirs()
@@ -249,6 +250,6 @@ tasks.register("createReleaseTasks", ReleaseStager) {
 
 tasks.register("releaseAll", Exec) {
     dependsOn "createReleaseTasks"
-    commandLine "jreleaser", "release", "--git-root-search", "--dry-run", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
-    // commandLine "jreleaser", "release", "--git-root-search", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
+    // commandLine "jreleaser", "release", "--git-root-search", "--dry-run", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
+    commandLine "jreleaser", "release", "--git-root-search", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
 }
