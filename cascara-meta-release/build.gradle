@@ -1,10 +1,7 @@
+import javax.inject.Inject
+
 plugins {
     id("java-library")
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
 }
 
 // Commands:
@@ -14,8 +11,31 @@ repositories {
 //   ./gradlew createReleaseTasks -Pinclude=cascara-format-vsix
 //
 
+
+// Load parent gradle.properties directly so dependencies and version both resolve
+def parentProps = new Properties()
+def parentFile = file('../gradle.properties')
+if (parentFile.exists()) {
+    parentFile.withInputStream { parentProps.load(it) }
+}
+
+// Expose variables like cascara_version to project extensions for dependencies
+parentProps.each { key, value ->
+    ext[key] = value
+}
+
+// Set Gradle's core version so JReleaser picks it up automatically
+if (parentProps.containsKey('cascara_version')) {
+    version = parentProps.getProperty('cascara_version')
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
 dependencies {
-    implementation platform(project(':cascara-meta-bom'))
+    implementation platform("io.github.qishr:cascara-meta-bom:$cascara_version")
 
     implementation "io.github.qishr:cascara-test-common-junit"
 
@@ -31,7 +51,7 @@ dependencies {
     implementation "io.github.qishr:cascara-ui"
 
     // implementation "io.github.qishr:cascara-macos-files"
-    implementation "io.github.qishr:cascara-macos-menus"
+    // implementation "io.github.qishr:cascara-macos-menus"
     // implementation "io.github.qishr:cascara-module-core"
 }
 
@@ -63,76 +83,110 @@ yamlDir.mkdirs()
 
 def artifactEntries = []
 
-// tasks.register("createReleaseTasks") {
-//     doLast {
-//         def artifacts = configurations.runtimeClasspath
-//             .resolvedConfiguration
-//             .resolvedArtifacts
-//             .findAll { it.moduleVersion.id.group == "io.github.qishr" }
-//             .findAll { art ->
-//                 def name = art.moduleVersion.id.name
-//                 !excluded.contains(name) && (included.isEmpty() || include.contains(name))
-//             }
-//     }
-// }
+// Inject file system operations for safe execution-time copying without calling 'project'
+abstract class ReleaseStager extends DefaultTask {
+    @Inject
+    abstract FileSystemOperations getFs()
 
-tasks.register("createReleaseTasks") {
-    artifacts.each { art ->
-        def id = art.moduleVersion.id
-        def version = id.version
-        def moduleName = id.name
-        def originDir = art.file.parentFile
-        def base = art.file.name.replace(".jar", "")
+    // @InputDirectory
+    // abstract DirectoryProperty getBuildDirProperty()
 
-        def filesToCopy = [
-            art.file,
-            new File(originDir, "${base}.pom"),
-            new File(originDir, "${base}-sources.jar"),
-            new File(originDir, "${base}-javadoc.jar")
-        ]
+    @Internal
+    abstract DirectoryProperty getBuildDirProperty()
 
-        def stagingDir = file("$buildDir/staging")
-        def moduleDir = file("$buildDir/staging/io/github/qishr/${moduleName}/${version}")
+    @Input
+    abstract Property<String> getProjectVersion()
 
-        filesToCopy.each { f ->
-            if (f.exists()) {
-                copy {
-                    from f
-                    into moduleDir
-                }
-                artifactEntries += "    - path: ${moduleDir}/${f.name}"
+    @Input
+    abstract Property<String> getRootDirPath()
+
+    @Input
+    abstract MapProperty<String, String> getProjectProperties()
+
+    @InputFiles
+    abstract ConfigurableFileCollection getRuntimeArtifacts()
+
+    @TaskAction
+    void stageReleases() {
+        def buildDir = buildDirProperty.get().asFile
+        def yamlDir = new File(buildDir, "jreleaser-yaml")
+        yamlDir.mkdirs()
+
+        def props = projectProperties.get()
+        def excluded = (props.get("exclude") ?: "")
+                .split(",")
+                .collect { it.trim() }
+                .findAll { it }
+
+        def included = (props.get("include") ?: "")
+                .split(",")
+                .collect { it.trim() }
+                .findAll { it }
+
+        def artifactEntries = []
+
+        runtimeArtifacts.files.each { file ->
+            def fileName = file.name
+            // Look for the Maven layout pattern in the path: .../io/github/qishr/{moduleName}/{version}/{fileName}
+            def parentDir = file.parentFile
+            def version = parentDir.name
+            def moduleName = parentDir.parentFile.name
+
+            // Fallback safety check if parent structure doesn't match standard maven coordinates
+            if (moduleName == null || moduleName == "build" || moduleName == "staging") {
+                return
             }
+
+            // Filter by include/exclude
+            if (excluded.contains(moduleName) || (!included.isEmpty() && !included.contains(moduleName))) {
+                return
+            }
+
+            def moduleDir = new File(buildDir, "staging/io/github/qishr/${moduleName}/${version}")
+
+            fs.copy {
+                from file
+                into moduleDir
+            }
+
+            artifactEntries += "    - path: ${moduleDir}/${fileName}"
+            println "Staged ${moduleName} (${version}) -> ${fileName}"
         }
-        println "Staged ${moduleName} (${version})"
-    }
 
-    // 2. ALWAYS stage the BOM POM
-    def bomPom = file("${project(':cascara-meta-bom').buildDir}/publications/mavenBom/pom-default.xml")
-    if (bomPom.exists()) {
-        def bomVersion = project(":cascara-meta-bom").version
-        def bomDir = file("$buildDir/staging/io/github/qishr/cascara-meta-bom/${bomVersion}")
-        bomDir.mkdirs()
+        // 2. ALWAYS stage the BOM POM using the passed rootDir path
+        def rootDirFile = new File(rootDirPath.get())
+        def bomPom = rootDirFile.parentFile.toPath()
+            .resolve("cascara-meta-build/cascara-meta-bom/build/publications/mavenBom/pom-default.xml")
+            .toFile()
 
-        copy {
-            from bomPom
-            into bomDir
-            rename { "cascara-meta-bom-${bomVersion}.pom" }
+        if (bomPom.exists()) {
+            def bomProperties = new Properties()
+            rootDirFile.parentFile.toPath()
+                .resolve("cascara-meta-build/cascara-meta-bom/gradle.properties")
+                .toFile().withInputStream { bomProperties.load(it) }
+
+            def bomVersion = bomProperties.getProperty('cascara_version')
+
+            def bomDir = new File(buildDir, "staging/io/github/qishr/cascara-meta-bom/${bomVersion}")
+            bomDir.mkdirs()
+
+            fs.copy {
+                from bomPom
+                into bomDir
+                rename { "cascara-meta-bom-${bomVersion}.pom" }
+            }
+
+            artifactEntries += "    - path: ${bomDir}/cascara-meta-bom-${bomVersion}.pom"
+
+            println "Staged cascara-meta-bom (${bomVersion})"
+        } else {
+            println "WARNING: BOM POM not found at ${bomPom}"
         }
 
-        artifactEntries += [
-            "    - path: ${bomDir}/cascara-meta-bom-${bomVersion}.pom"
-        ]
-
-        println "Staged cascara-meta-bom (${bomVersion})"
-    } else {
-        println "WARNING: BOM POM not found at ${bomPom}"
-    }
-
-    doLast {
         // Write ONE YAML file for all modules
         def yaml = """
 project:
-  version: ${project.version}
+  version: ${projectVersion.get()}
 
 signing:
   active: always
@@ -148,7 +202,7 @@ checksum:
 
 files:
   artifacts:
-${artifactEntries.join("\n")}
+${artifactEntries.unique().join("\n")}
 
 deploy:
   maven:
@@ -158,7 +212,6 @@ deploy:
         url: https://central.sonatype.com/api/v1/publisher
         stagingRepositories:
           - ${buildDir}/staging
-        # applyMavenCentralRules: false
         applyMavenCentralRules: true
 """
 
@@ -169,13 +222,33 @@ deploy:
     }
 }
 
-tasks.register("releaseAll", Exec) {
-    dependsOn "createReleaseTasks"
-    // commandLine "jreleaser", "release", "--dry-run", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
-    commandLine "jreleaser", "release", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
+tasks.register("createReleaseTasks", ReleaseStager) {
+    buildDirProperty.set(layout.buildDirectory)
+    projectVersion.set(project.version.toString())
+    rootDirPath.set(project.rootDir.absolutePath)
+
+    Map<String, String> propMap = [:]
+    if (project.hasProperty("exclude")) propMap.put("exclude", project.property("exclude").toString())
+    if (project.hasProperty("include")) propMap.put("include", project.property("include").toString())
+    projectProperties.set(propMap)
+
+    runtimeArtifacts.from(configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.findAll { art ->
+        art.moduleVersion.id.group == "io.github.qishr"
+    }.collect { art ->
+        def originDir = art.file.parentFile
+        def base = art.file.name.replace(".jar", "")
+        [
+            art.file,
+            new File(originDir, "${base}.pom"),
+            new File(originDir, "${base}-sources.jar"),
+            new File(originDir, "${base}-javadoc.jar")
+        ]
+    }.flatten().findAll { it.exists() })
 }
 
 
-tasks.named("createReleaseTasks") {
-    dependsOn(":cascara-meta-bom:publishMavenBomPublicationToMavenLocal")
+tasks.register("releaseAll", Exec) {
+    dependsOn "createReleaseTasks"
+    commandLine "jreleaser", "release", "--git-root-search", "--dry-run", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
+    // commandLine "jreleaser", "release", "--git-root-search", "--basedir", rootProject.projectDir, "--config-file", "$yamlDirName/release.yml"
 }

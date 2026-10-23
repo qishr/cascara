@@ -1,5 +1,5 @@
 pluginManagement {
-    includeBuild("cascara-gradle-plugins")
+    // includeBuild("cascara-meta-build")
     repositories {
         mavenLocal()
         gradlePluginPortal()
@@ -11,7 +11,6 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
-include (":casc-command")
-include (":cascara-meta-bom")
-include (":cascara-meta-release")
-
+include "cascara-meta-build:cascara-meta-bom"
+include "cascara-meta-build:cascara-meta-conventions"
+include "cascara-meta-build:cascara-meta-publish"

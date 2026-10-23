@@ -4,6 +4,23 @@ plugins {
     id 'org.graalvm.buildtools.native' version '0.10.2'
 }
 
+// Load parent gradle.properties directly so dependencies and version both resolve
+def parentProps = new Properties()
+def parentFile = file('../gradle.properties')
+if (parentFile.exists()) {
+    parentFile.withInputStream { parentProps.load(it) }
+}
+
+// Expose variables like cascara_version to project extensions for dependencies
+parentProps.each { key, value ->
+    ext[key] = value
+}
+
+// Set Gradle's core version so JReleaser picks it up automatically
+if (parentProps.containsKey('cascara_version')) {
+    version = parentProps.getProperty('cascara_version')
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.release = 21
 }

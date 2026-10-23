@@ -1,0 +1,26 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+def parentPropsFile = file('../gradle.properties')
+if (parentPropsFile.exists()) {
+    def props = new Properties()
+    parentPropsFile.withInputStream { props.load(it) }
+
+    // If cascara_version exists, set it as the root project's version globally
+    if (props.containsKey('cascara_version')) {
+        gradle.rootProject {
+            version = props.getProperty('cascara_version')
+        }
+    }
+
+    props.each { key, value ->
+        settings.ext[key] = value
+    }
+}
+
+rootProject.name = 'casc-command'
