@@ -241,6 +241,6 @@ tasks.register("createReleaseTasks", ReleaseStager) {
 
 tasks.register("releaseAll", Exec) {
     dependsOn "createReleaseTasks"
-    // commandLine "jreleaser", "release", "--git-root-search", "--dry-run", "--basedir", rootProject.projectDir, "--output-directory", "build/jreleaser", "--config-file", "$yamlDirName/release.yml"
-    commandLine "jreleaser", "release", "--git-root-search", "--basedir", rootProject.projectDir, "--output-directory", "build/jreleaser", "--config-file", "$yamlDirName/release.yml"
+    commandLine "jreleaser", "release", "--git-root-search", "--dry-run", "--basedir", rootProject.projectDir, "--output-directory", "build/jreleaser", "--config-file", "$yamlDirName/release.yml"
+    // commandLine "jreleaser", "release", "--git-root-search", "--basedir", rootProject.projectDir, "--output-directory", "build/jreleaser", "--config-file", "$yamlDirName/release.yml"
 }
