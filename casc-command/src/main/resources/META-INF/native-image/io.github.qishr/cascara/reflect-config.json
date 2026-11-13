@@ -20,7 +20,7 @@
         "allNestMembers": true
     },
     {
-        "name" : "io.github.qishr.cascara.common.util.CommandLine$AutoHelpMixin",
+        "name" : "picocli.CommandLine$AutoHelpMixin",
         "allDeclaredConstructors" : true,
         "allPublicConstructors" : true,
         "allDeclaredMethods" : true,
@@ -40,6 +40,14 @@
     },
     {
         "name": "io.github.qishr.cascara.common.content.type.ContentTypeRegistry",
+        "queryAllDeclaredConstructors": true,
+        "allDeclaredConstructors": true,
+        "allPublicConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+    },
+    {
+        "name": "io.github.qishr.cascara.common.content.type.ContentTypeStore",
         "queryAllDeclaredConstructors": true,
         "allDeclaredConstructors": true,
         "allPublicConstructors": true,

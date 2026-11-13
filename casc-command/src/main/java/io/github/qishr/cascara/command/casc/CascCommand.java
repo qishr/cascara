@@ -14,13 +14,14 @@ import io.github.qishr.cascara.common.io.IOUtils;
 import io.github.qishr.cascara.common.io.provider.ResResourceProvider;
 import io.github.qishr.cascara.common.service.SPL;
 import io.github.qishr.cascara.common.util.Cascara;
-import io.github.qishr.cascara.common.util.CommandLine;
-import io.github.qishr.cascara.common.util.CommandLine.Command;
-import io.github.qishr.cascara.common.util.CommandLine.Option;
-import io.github.qishr.cascara.common.util.CommandLine.Parameters;
 import io.github.qishr.cascara.common.util.JarManifest;
 import io.github.qishr.cascara.common.util.JreUtils;
 import io.github.qishr.cascara.common.util.UriScheme;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;;
 
 @Command(name = "casc",
         mixinStandardHelpOptions = true,
@@ -108,7 +109,7 @@ public class CascCommand implements Callable<Integer> {
 
     private void initGlobalState() {
         if (homePath != null) {
-            Cascara.setHomePath(Path.of(homePath));
+            Cascara.instance().setHomePath(Path.of(homePath));
         }
 
         // Force SPL to register classes directly, avoiding GraalVM issues with moudleopath scanning
@@ -131,7 +132,7 @@ public class CascCommand implements Callable<Integer> {
 
     public static String getCascaraVersion() {
         if (CASCARA_VERSION_PROP == null) {
-            return Cascara.getVersion().toString();
+            return Cascara.instance().getVersion().toString();
         } else {
             return CASCARA_VERSION_PROP;
         }
@@ -155,17 +156,17 @@ public class CascCommand implements Callable<Integer> {
         output("Command version: " + getCommandVersion());
         output("Cascara build version: " + getCascaraVersion());
 
-        if (Cascara.getHomeEnvVar() != null) {
-            output("Cascara home env var: " + Cascara.getHomeEnvVar());
+        if (Cascara.instance().getHomeEnvVar() != null) {
+            output("Cascara home env var: " + Cascara.instance().getHomeEnvVar());
         }
 
-        output("Home: " + Cascara.getHomePath());
-        output("Content types: " + Cascara.getContentTypesPath());
-        output("Schemas: " + Cascara.getSchemasPath());
+        output("Home: " + Cascara.instance().getHomePath());
+        output("Content types: " + Cascara.instance().getContentTypesPath());
+        output("Schemas: " + Cascara.instance().getSchemasPath());
 
-        output("Active installation: " + Cascara.getActiveVersionString());
+        output("Active installation: " + Cascara.instance().getActiveVersionString());
 
-        List<String> installedVersions = Cascara.getInstalledVersions();
+        List<String> installedVersions = Cascara.instance().getInstalledVersions();
         if (installedVersions.isEmpty()) {
             output("No installed versions");
         } else {

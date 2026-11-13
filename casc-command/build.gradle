@@ -39,6 +39,9 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // Picocli
+    implementation 'info.picocli:picocli:4.7.7'
+
     // Cascara
     implementation "io.github.qishr:cascara-common"
     implementation "io.github.qishr:cascara-common-io"
