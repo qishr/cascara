@@ -40,6 +40,7 @@ dependencies {
     implementation "io.github.qishr:cascara-test-common-junit"
 
     implementation "io.github.qishr:cascara-common"
+    implementation "io.github.qishr:cascara-common-annotation"
     implementation "io.github.qishr:cascara-common-io"
     implementation "io.github.qishr:cascara-format-vsix"
     implementation "io.github.qishr:cascara-lang-ct"
@@ -241,6 +242,6 @@ tasks.register("createReleaseTasks", ReleaseStager) {
 
 tasks.register("releaseAll", Exec) {
     dependsOn "createReleaseTasks"
-    commandLine "jreleaser", "release", "--git-root-search", "--dry-run", "--basedir", rootProject.projectDir, "--output-directory", "build/jreleaser", "--config-file", "$yamlDirName/release.yml"
-    // commandLine "jreleaser", "release", "--git-root-search", "--basedir", rootProject.projectDir, "--output-directory", "build/jreleaser", "--config-file", "$yamlDirName/release.yml"
+    // commandLine "jreleaser", "release", "--git-root-search", "--dry-run", "--basedir", rootProject.projectDir, "--output-directory", "build/jreleaser", "--config-file", "$yamlDirName/release.yml"
+    commandLine "jreleaser", "release", "--git-root-search", "--basedir", rootProject.projectDir, "--output-directory", "build/jreleaser", "--config-file", "$yamlDirName/release.yml"
 }

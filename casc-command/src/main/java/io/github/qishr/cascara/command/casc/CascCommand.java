@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 
 import io.github.qishr.cascara.command.casc.CascCommand.Get;
 import io.github.qishr.cascara.common.content.ResourceContent;
-import io.github.qishr.cascara.common.diagnostic.exception.LocalizableIOException;
+import io.github.qishr.cascara.common.i18n.exception.LocalizableIOException;
 import io.github.qishr.cascara.common.io.IOUtils;
 import io.github.qishr.cascara.common.io.provider.ResResourceProvider;
 import io.github.qishr.cascara.common.service.SPL;
@@ -109,7 +109,7 @@ public class CascCommand implements Callable<Integer> {
 
     private void initGlobalState() {
         if (homePath != null) {
-            Cascara.instance().setHomePath(Path.of(homePath));
+            Cascara.get().setHomePath(Path.of(homePath));
         }
 
         // Force SPL to register classes directly, avoiding GraalVM issues with moudleopath scanning
@@ -132,7 +132,7 @@ public class CascCommand implements Callable<Integer> {
 
     public static String getCascaraVersion() {
         if (CASCARA_VERSION_PROP == null) {
-            return Cascara.instance().getVersion().toString();
+            return Cascara.get().getVersion().toString();
         } else {
             return CASCARA_VERSION_PROP;
         }
@@ -156,17 +156,17 @@ public class CascCommand implements Callable<Integer> {
         output("Command version: " + getCommandVersion());
         output("Cascara build version: " + getCascaraVersion());
 
-        if (Cascara.instance().getHomeEnvVar() != null) {
-            output("Cascara home env var: " + Cascara.instance().getHomeEnvVar());
+        if (Cascara.get().getHomeEnvVar() != null) {
+            output("Cascara home env var: " + Cascara.get().getHomeEnvVar());
         }
 
-        output("Home: " + Cascara.instance().getHomePath());
-        output("Content types: " + Cascara.instance().getContentTypesPath());
-        output("Schemas: " + Cascara.instance().getSchemasPath());
+        output("Home: " + Cascara.get().getHomePath());
+        output("Content types: " + Cascara.get().getContentTypesPath());
+        output("Schemas: " + Cascara.get().getSchemasPath());
 
-        output("Active installation: " + Cascara.instance().getActiveVersionString());
+        output("Active installation: " + Cascara.get().getActiveVersionString());
 
-        List<String> installedVersions = Cascara.instance().getInstalledVersions();
+        List<String> installedVersions = Cascara.get().getInstalledVersions();
         if (installedVersions.isEmpty()) {
             output("No installed versions");
         } else {

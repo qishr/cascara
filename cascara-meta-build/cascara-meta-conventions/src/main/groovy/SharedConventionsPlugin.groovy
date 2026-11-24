@@ -1,13 +1,16 @@
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.ZoneOffset
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.process.CommandLineArgumentProvider
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
 class SharedConventionsPlugin implements Plugin<Project> {
@@ -44,9 +47,44 @@ class SharedConventionsPlugin implements Plugin<Project> {
             t.into project.layout.buildDirectory.dir('modulepath')
         }
 
+        def signing = project.extensions.create('cascaraSigning', CascaraSigningExtension)
+
+        signing.keystore = project.findProperty('cascaraSigningKeystore')
+        signing.storePass = project.findProperty('cascaraSigningStorePass')
+        signing.keyPass = project.findProperty('cascaraSigningKeyPass')
+        signing.alias = 'signing'
+
+        def jarTask = project.tasks.named('jar', org.gradle.api.tasks.bundling.Jar)
+
+        project.tasks.register('signJar', SignJarTask) { sign ->
+            // Property binding automatically wires task dependencies
+            sign.archiveFile.set(jarTask.flatMap { it.archiveFile })
+
+            sign.keystore.set(project.providers.provider { signing.keystore })
+            sign.storePass.set(project.providers.provider { signing.storePass })
+            sign.keyPass.set(project.providers.provider { signing.keyPass })
+            sign.alias.set(signing.alias)
+        }
+
+        // TODO: Get this working...
+        // project.tasks.register('verifyJarSignature', Exec) {
+        //     dependsOn 'signJar'
+
+        //     commandLine(
+        //         'jarsigner',
+        //         '-keystore', signing.keystore,
+        //         '-storepass', signing.storePass,
+        //         '-verify',
+        //         '-verbose',
+        //         jarTask.archiveFile.get().asFile.absolutePath
+        //     )
+        // }
+
         project.tasks.named('jar') {
+            it.finalizedBy 'signJar'
             it.finalizedBy 'runtimeModulePath'
         }
+
 
         // --- Test configuration ---
         project.tasks.withType(org.gradle.api.tasks.testing.Test).configureEach { test ->
@@ -91,9 +129,10 @@ class SharedConventionsPlugin implements Plugin<Project> {
             def defaultMinVersion = "${major}.${minor}.0"
 
             jar.manifest.attributes(
-                'Implementation-Title': project.providers.gradleProperty('maven_name'),
                 'Implementation-Version': project.version,
                 'Implementation-Vendor': project.group,
+                'Implementation-Title': project.maven_name,
+                'Module-Name': project.java_name,
                 'Cascara-Version': project.cascara_version,
                 'Min-Cascara-Version': project.findProperty('min_cascara_version') ?: defaultMinVersion,
                 'Build-Date': isoDate
