@@ -98,7 +98,7 @@ class SharedConventionsPlugin implements Plugin<Project> {
                 exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
                 showExceptions = true
                 showCauses = true
-                showStackTraces = true
+                // showStackTraces = true
             }
 
             test.finalizedBy 'jacocoTestReport'
